@@ -9,4 +9,12 @@ import StreamChat
 import StreamChatUI
 import UIKit
 
-class ChatViewController: ChatChannelListVC {}
+class ChatViewController: ChatChannelListVC {
+
+    struct ChatView: View {
+    var body: some View {
+        ChannelListView(streamChatClient: streamChatClient)
+    }
+}
+
+}

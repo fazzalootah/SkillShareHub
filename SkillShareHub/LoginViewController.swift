@@ -49,9 +49,52 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             }
             
             self.checkUserAccountStatus(userID: userID)
+            streamChatClient.createToken(userId: userID) { (result) in
+        switch result {
+        case .success(let token):
+            streamChatClient.connectUser(token: token, user: .init(id: userID)) { (result) in
+                switch result {
+                case .success(let user):
+                    print("User \(user.id) successfully authenticated with Stream Chat.")
+                case .failure(let error):
+                    print("Error authenticating with Stream Chat: \(error.localizedDescription)")
+                }
+            }
+        case .failure(let error):
+            print("Error creating token for Stream Chat: \(error.localizedDescription)")
         }
     }
+        }
+    }
+    // test
+//     func authenticateStreamChatUser(userID: String) {
     
+// }
+struct ContentView: View {
+    @State private var isAuthenticated = false
+    
+    var body: some View {
+        VStack {
+            if isAuthenticated {
+                NavigationLink(destination: ChatView()) {
+                    Text("Go to Chat")
+                }
+            } else {
+                // Login form goes here
+            }
+        }
+        .onAppear {
+            // Check if the user is authenticated
+            Auth.auth().addStateDidChangeListener { (auth, user) in
+                if let _ = user {
+                    self.isAuthenticated = true
+                }
+            }
+        }
+    }
+}
+
+
     private func fetchStreamTokenAndInitializeChat(userID: String) {
         Functions.functions().httpsCallable("generateStreamToken").call { [weak self] result, error in
             guard let self = self else { return }
