@@ -11,7 +11,6 @@ import Firebase
 import FirebaseAuth
 import SwiftUI
 import FirebaseFirestore
-import CometChatUIKitSwift
 
 class SignUpViewController: UIViewController, UITextFieldDelegate {
     var db : Firestore!
@@ -96,22 +95,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
             }
         }
     }
-    
-    private func createCometChatUser(uid: String, name: String) {
-        // Assuming you have a CometChat setup method elsewhere that initializes the SDK
-        let user = CometChatPro.User(uid: uid, name: name)
-        
-        // Set additional properties if needed
-        // user.avatar = "URL_TO_AVATAR"
-        
-        CometChat.createUser(user: user, apiKey: "a52a75d8a46c24e053829b5726730c593e75984d", onSuccess: { (user) in
-            // Handle success
-        }, onError: { (error) in
-            // Handle error
-            self.presentAlert(title: "Error", message: "Failed to create CometChat user: \(error?.errorDescription ?? "Unknown error")")
-        })
-    }
-    
     
     func checkUsernameTaken(username: String) async -> Bool {
         let querySnapshot = try? await db.collection("usernames").document(username).getDocument()

@@ -13,10 +13,12 @@ import FirebaseFirestore
 class Dashboard: UIViewController {
     // MARK: - Properties
     var db: Firestore!
-    
+    var currentUser: User?
     // MARK: - Lifecycle Methods
     @IBOutlet weak var welcomeUserName: UILabel!
-
+    
+    
+    
     func fetchUserName (){
         guard let userID = Auth.auth().currentUser?.uid else {
             print("User not logged in")

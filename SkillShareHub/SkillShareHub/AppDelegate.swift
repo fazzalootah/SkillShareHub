@@ -8,9 +8,6 @@
 import UIKit
 import Firebase
 import FirebaseCore
-import CometChatPro
-import CometChatSDK
-
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -18,25 +15,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
-        
-         let uikitSettings = UIKitSettings()
-              uikitSettings.set(appID: "2536007274ca18ed")
-                           .set(authKey: "a52a75d8a46c24e053829b5726730c593e75984d")
-                           .set(region: "in" )
-                           .subscribePresenceForAllUsers()
-                           .build()
-               CometChatUIKit.init(uiKitSettings: uikitSettings, result: {
-                          result in
-                          switch result {
-                          case .success(let success):
-                            debugPrint("Initialization completed successfully \(success)")
-                            break
-                          case .failure(let error):
-                            debugPrint( "Initialization failed with exception: \(error.localizedDescription)")
-                            break
-                          }
-                        })
-        
         return true
     }
 
