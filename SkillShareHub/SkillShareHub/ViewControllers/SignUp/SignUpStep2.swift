@@ -178,9 +178,8 @@ class SignUpStep2: UIViewController, UITextFieldDelegate{
     
     func showSuccessAndNavigate() {
         let storyboard = UIStoryboard(name: "Dashboard", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "Dashboard") as? Dashboard {
-            vc.modalPresentationStyle = .overFullScreen
-            self.present(vc, animated: true)
-        }
+        let vc = storyboard.instantiateViewController(withIdentifier: "Dashboard")
+        vc.modalPresentationStyle = .overFullScreen
+        self.present(vc, animated: true)
     }
 }

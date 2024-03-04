@@ -10,7 +10,6 @@ import UIKit
 import Firebase
 import FirebaseAuth
 import FirebaseFirestore
-import SwiftUI
 
 class SignUpStep1: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
     var db : Firestore!
@@ -20,35 +19,57 @@ class SignUpStep1: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, 
     @IBOutlet var pickerView: UIPickerView!
     
     @IBAction func continueSUS1(_ sender: UIButton) {
-        guard let userID = Auth.auth().currentUser?.uid else {
-            print("User not logged in")
-            return
-        }
-        guard isUserAtLeast16YearsOld() else {
-            presentAlert(message: "Accounts for under 16s aren't allowed for safeguarding purposes")
-            disableAccountForUnderageUser()
-            return
-        }
-        
-        guard let index = selectedDistrictIndex else {
-            presentAlert(message: "Please select a district")
-            return
-        }
-        
-        let selectedDistrict = pickerData[index]
-        
-        Task {
-            do {
-               try await saveSelectedDistrictToFirestore(userID:userID, district: selectedDistrict)
-               try await saveDateOfBirth(userID: userID)
-            } catch {
-                DispatchQueue.main.async {
-                    self.presentAlert(message: "An error occurred while saving your information")
+        Task { @MainActor in
+            guard let userID = Auth.auth().currentUser?.uid else {
+                print("User not logged in")
+                return
+            }
+            
+            guard isUserAtLeast16YearsOld() else {
+                self.presentAlert(message: "Accounts for under 16s aren't allowed for safeguarding purposes") {
+                    self.disableAccountForUnderageUser()
                 }
+                return
+            }
+            
+            guard let index = selectedDistrictIndex else {
+                presentAlert(message: "Please select a district")
+                return
+            }
+            
+            let selectedDistrict = pickerData[index]
+            
+            do {
+                try await saveSelectedDistrictToFirestore(userID: userID, district: selectedDistrict)
+                try await saveDateOfBirth(userID: userID)
+                presentSignUpStep2()
+            } catch {
+                presentAlert(message: "An error occurred while saving your information")
             }
         }
-        presentSignUpStep2()
     }
+
+    // Updated presentAlert to include a completion handler
+    func presentAlert(message: String, completion: (() -> Void)? = nil) {
+        if let presentedViewController = self.presentedViewController {
+            presentedViewController.dismiss(animated: true) {
+                self.showAlert(message: message, completion: completion)
+            }
+        } else {
+            showAlert(message: message, completion: completion)
+        }
+    }
+
+    private func showAlert(message: String, completion: (() -> Void)? = nil) {
+        let alertController = UIAlertController(title: "An error has occurred", message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+            completion?()
+        }
+        alertController.addAction(okAction)
+        self.present(alertController, animated: true, completion: nil)
+    }
+
+        
     
     @IBAction func datePickerValueChanged(_ sender: UIDatePicker) {
   
@@ -165,16 +186,7 @@ class SignUpStep1: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, 
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
        selectedDistrictIndex = row
     }
-    
-    func presentAlert(message:String) {
-        let alertController = UIAlertController(title: "An error has occurred", message: message, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-        alertController.addAction(okAction)
-        DispatchQueue.main.async {
-            self.present(alertController,animated: true,completion: nil)
-        }
-    }
-    
+
     func presentSignUpStep2(){
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "SignUpStep2")

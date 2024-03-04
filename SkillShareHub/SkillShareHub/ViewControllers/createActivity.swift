@@ -8,12 +8,9 @@
 import UIKit
 import FirebaseFirestore
 
-class CreateActivityViewController: UIViewController {
+class CreateActivityViewController: UIViewController,UIPickerViewDelegate, UIPickerViewDataSource {
     @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var descriptionTextView: UITextField! // This should be UITextView if you're entering a description.
-    @IBOutlet weak var locationTextField: UITextField!
-    @IBOutlet weak var requirementsTextView: UITextField! // This should be UITextView for consistency and functionality.
-    @IBOutlet weak var costTextField: UITextField!
     @IBOutlet weak var categoryPickerView: UIPickerView!
     @IBOutlet weak var durationDatePicker: UIDatePicker!
     @IBOutlet weak var dateTimeDatePicker: UIDatePicker!
@@ -23,7 +20,8 @@ class CreateActivityViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        db = Firestore.firestore()
+        categoryPickerView.delegate = self
+        categoryPickerView.dataSource = self
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
     }
@@ -31,6 +29,21 @@ class CreateActivityViewController: UIViewController {
     @objc func dismissKeyboard() {
         view.endEditing(true)
     }
-    
-    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+         return 1
+     }
+
+     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+         return categories.count
+     }
+     
+     // MARK: UIPickerViewDelegate Methods
+     
+     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+         return categories[row]
+     }
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        // Handle the selection of a category
+        // For example: print("Selected category: \(categories[row])")
+    }
 }

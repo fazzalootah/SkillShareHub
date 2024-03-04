@@ -47,7 +47,7 @@ class forgotPassword: UIViewController, UITextFieldDelegate {
     }
 
     func presentAlert(message:String) {
-        let alertController = UIAlertController(title: "An error has occurred", message: message, preferredStyle: .alert)
+        let alertController = UIAlertController(title: "Email Successfully sent", message: message, preferredStyle: .alert)
         let okAction = UIAlertAction(title: "OK", style: .default)
         alertController.addAction(okAction)
         self.present(alertController,animated: true)

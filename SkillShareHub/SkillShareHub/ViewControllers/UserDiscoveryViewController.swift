@@ -10,7 +10,6 @@ import FirebaseFirestore
 
 struct User {
     let username: String
-    // Add other user properties as needed
 }
 
 class UserDiscoveryViewController: UIViewController {
